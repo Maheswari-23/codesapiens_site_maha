@@ -2,62 +2,75 @@ import { useState, useEffect, useRef } from 'react';
 
 /**
  * useTypewriter
- * Cycles through an array of strings with typing + deleting animation.
- * @param {string[]} strings     - Array of strings to cycle through
- * @param {object}  options
- * @param {number}  options.typeSpeed   - ms per character typed (default 80)
- * @param {number}  options.deleteSpeed - ms per character deleted (default 40)
- * @param {number}  options.pauseTime   - ms to pause before deleting (default 2000)
+ * Cycles through strings with human-paced typing animation.
+ * Returns { text } — render: <span>{text}</span><span className="tw-cursor">|</span>
+ *
+ * @param {string[]} strings
+ * @param {object}  opts
  */
-export function useTypewriter(strings, {
-  typeSpeed = 80,
-  deleteSpeed = 40,
-  pauseTime = 2000,
+export function useTypewriter(strings = [], {
+  typeSpeed   = 75,
+  deleteSpeed = 35,
+  pauseAfter  = 2200,   // pause after fully typed
+  pauseBefore = 400,    // pause before starting delete
 } = {}) {
-  const [displayed, setDisplayed] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [stringIndex, setStringIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [text, setText] = useState('');
+  const stateRef = useRef({
+    stringIdx: 0,
+    charIdx:   0,
+    phase:     'typing',   // 'typing' | 'pausing' | 'pre-delete' | 'deleting'
+  });
   const timerRef = useRef(null);
 
   useEffect(() => {
-    // Respect reduced motion — show full final string instantly
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) {
-      setDisplayed(strings[strings.length - 1]);
+    if (!strings.length) return;
+
+    // Respect prefers-reduced-motion — show first string instantly
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setText(strings[0]);
       return;
     }
 
-    const current = strings[stringIndex];
-
     const tick = () => {
-      if (isPaused) {
-        setIsPaused(false);
-        setIsDeleting(true);
-        return;
-      }
+      const s = stateRef.current;
+      const current = strings[s.stringIdx];
 
-      if (isDeleting) {
-        // Delete one character
-        setDisplayed(prev => prev.slice(0, -1));
-        if (displayed.length <= 1) {
-          setIsDeleting(false);
-          setStringIndex(prev => (prev + 1) % strings.length);
+      if (s.phase === 'typing') {
+        s.charIdx++;
+        setText(current.slice(0, s.charIdx));
+        if (s.charIdx >= current.length) {
+          s.phase = 'pausing';
+          timerRef.current = setTimeout(tick, pauseAfter);
+          return;
         }
-      } else {
-        // Type one character
-        setDisplayed(current.slice(0, displayed.length + 1));
-        if (displayed.length + 1 === current.length) {
-          // Fully typed — pause before deleting
-          setIsPaused(true);
+        timerRef.current = setTimeout(tick, typeSpeed);
+
+      } else if (s.phase === 'pausing') {
+        s.phase = 'pre-delete';
+        timerRef.current = setTimeout(tick, pauseBefore);
+
+      } else if (s.phase === 'pre-delete') {
+        s.phase = 'deleting';
+        timerRef.current = setTimeout(tick, deleteSpeed);
+
+      } else if (s.phase === 'deleting') {
+        s.charIdx--;
+        setText(current.slice(0, s.charIdx));
+        if (s.charIdx <= 0) {
+          s.stringIdx = (s.stringIdx + 1) % strings.length;
+          s.charIdx   = 0;
+          s.phase     = 'typing';
+          timerRef.current = setTimeout(tick, typeSpeed * 2);
+          return;
         }
+        timerRef.current = setTimeout(tick, deleteSpeed);
       }
     };
 
-    const delay = isPaused ? pauseTime : isDeleting ? deleteSpeed : typeSpeed;
-    timerRef.current = setTimeout(tick, delay);
+    timerRef.current = setTimeout(tick, typeSpeed);
     return () => clearTimeout(timerRef.current);
-  }, [displayed, isDeleting, isPaused, stringIndex, strings, typeSpeed, deleteSpeed, pauseTime]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  return displayed;
+  return { text };
 }

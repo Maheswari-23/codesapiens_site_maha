@@ -2,135 +2,130 @@ import { useEffect, useRef } from 'react';
 
 /**
  * useAurora
- * Draws an animated aurora effect with blobs + dot grid ripple on a canvas.
- * Blobs attract toward cursor position on mousemove.
+ * Renders a canvas aurora effect with:
+ * - 3 blobs: indigo, purple, aqua (new design system colors)
+ * - Gaussian blur via filter, slow sin drift, mouse attraction
+ * - Dot grid that brightens near cursor
+ * - 8 floating code tokens drifting upward
  */
 export function useAurora(canvasRef) {
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const rafRef = useRef(null);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
+  const rafRef   = useRef(null);
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const canvas = canvasRef?.current;
+    const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    let width = 0;
-    let height = 0;
-    let frame = 0;
-
-    // Code tokens that drift upward
-    const CODE_TOKENS = ['const', '=>', '{}', '</>', 'async', 'await', 'fn()', '[]', '===', '//'];
-    const tokens = CODE_TOKENS.map((t, i) => ({
-      text: t,
-      x: Math.random() * 100,   // percent
-      y: Math.random() * 100,
-      speed: 0.02 + Math.random() * 0.03,
-      opacity: 0.15 + Math.random() * 0.15,
-      size: 11 + Math.random() * 7,
-    }));
-
-    // Aurora blobs
-    const blobs = [
-      { baseX: 0.25, baseY: 0.3,  r: 320, color: 'rgba(124,58,237,0.22)',  phase: 0 },
-      { baseX: 0.7,  baseY: 0.5,  r: 280, color: 'rgba(6,182,212,0.18)',   phase: 2.1 },
-      { baseX: 0.5,  baseY: 0.75, r: 260, color: 'rgba(30,27,75,0.35)',    phase: 4.2 },
-      { baseX: 0.1,  baseY: 0.7,  r: 220, color: 'rgba(6,182,212,0.12)',   phase: 1.0 },
-      { baseX: 0.85, baseY: 0.2,  r: 200, color: 'rgba(124,58,237,0.14)',  phase: 3.5 },
-    ];
 
     const resize = () => {
-      width  = canvas.offsetWidth;
-      height = canvas.offsetHeight;
-      canvas.width  = width;
-      canvas.height = height;
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
     resize();
-
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
+    window.addEventListener('resize', resize);
 
     const onMouseMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
       mouseRef.current = {
-        x: (e.clientX - rect.left) / rect.width,
-        y: (e.clientY - rect.top)  / rect.height,
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
       };
     };
-    canvas.parentElement?.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mousemove', onMouseMove);
 
-    const draw = () => {
-      if (!ctx || !width || !height) {
-        rafRef.current = requestAnimationFrame(draw);
-        return;
-      }
+    // ── Blobs config ──────────────────────────────────────────────────────────
+    const BLOBS = [
+      { color: '#6366f1', size: 600, ox: 0.18, oy: 0.22, speed: 0.00028, phase: 0    },
+      { color: '#a855f7', size: 400, ox: 0.78, oy: 0.20, speed: 0.00035, phase: 1.5  },
+      { color: '#22d3ee', size: 300, ox: 0.50, oy: 0.80, speed: 0.00022, phase: 3.0  },
+    ];
 
-      frame += prefersReduced ? 0 : 1;
-      const t = frame * 0.008;
+    // ── Code tokens ───────────────────────────────────────────────────────────
+    const TOKEN_STRINGS = ['const', '=>', '{}', '</>', 'async', 'null', '[]', 'fn'];
+    const tokens = TOKEN_STRINGS.map((str, i) => ({
+      str,
+      x:     0.1 + (i / TOKEN_STRINGS.length) * 0.82,
+      y:     0.2 + Math.random() * 0.6,
+      speed: 0.00030 + Math.random() * 0.00050,
+      drift: (Math.random() - 0.5) * 0.00012,
+      alpha: 0.06 + Math.random() * 0.04,
+    }));
 
-      ctx.clearRect(0, 0, width, height);
+    // ── Dot grid ──────────────────────────────────────────────────────────────
+    const DOT_SPACING = 32;
 
-      // ── Aurora blobs ─────────────────────────────────────────
-      blobs.forEach(blob => {
-        const attract = 0.08;
-        const bx = (blob.baseX + Math.sin(t + blob.phase) * 0.12 + (mouseRef.current.x - 0.5) * attract) * width;
-        const by = (blob.baseY + Math.cos(t + blob.phase * 0.7) * 0.08 + (mouseRef.current.y - 0.5) * attract) * height;
+    const t0 = performance.now();
 
-        const grad = ctx.createRadialGradient(bx, by, 0, bx, by, blob.r);
-        grad.addColorStop(0, blob.color);
-        grad.addColorStop(1, 'transparent');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(bx, by, blob.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
+    const draw = (now) => {
+      rafRef.current = requestAnimationFrame(draw);
+      const t  = now - t0;
+      const W  = canvas.width;
+      const H  = canvas.height;
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
 
-      // ── Dot grid ripple ──────────────────────────────────────
-      const GRID = 38;
-      const cols = Math.ceil(width  / GRID) + 1;
-      const rows = Math.ceil(height / GRID) + 1;
-      const mx = mouseRef.current.x * width;
-      const my = mouseRef.current.y * height;
+      ctx.clearRect(0, 0, W, H);
 
-      ctx.fillStyle = 'rgba(255,255,255,0.18)';
-      for (let c = 0; c < cols; c++) {
-        for (let r = 0; r < rows; r++) {
-          const gx = c * GRID;
-          const gy = r * GRID;
-          const dist = Math.hypot(gx - mx, gy - my);
-          const ripple = Math.sin(dist * 0.04 - t * 4) * 0.5 + 0.5;
-          const dotR = 1 + ripple * 2.2;
-          const alpha = 0.08 + ripple * 0.2;
-          ctx.globalAlpha = alpha;
+      // ── Dot grid ───────────────────────────────────────────────────────────
+      const cols = Math.ceil(W / DOT_SPACING) + 1;
+      const rows = Math.ceil(H / DOT_SPACING) + 1;
+      const mxPx = mx * W;
+      const myPx = my * H;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const dx = c * DOT_SPACING - mxPx;
+          const dy = r * DOT_SPACING - myPx;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const bright = dist < 80 ? 0.12 + (1 - dist/80) * 0.08 : 0.03;
+          ctx.fillStyle = `rgba(255,255,255,${bright})`;
           ctx.beginPath();
-          ctx.arc(gx, gy, dotR, 0, Math.PI * 2);
+          ctx.arc(c * DOT_SPACING, r * DOT_SPACING, 1, 0, Math.PI * 2);
           ctx.fill();
         }
       }
-      ctx.globalAlpha = 1;
 
-      // ── Code tokens ──────────────────────────────────────────
+      // ── Aurora blobs ──────────────────────────────────────────────────────
+      BLOBS.forEach(blob => {
+        // Slow sin drift ±80px
+        const driftX = Math.sin(t * blob.speed + blob.phase) * 80;
+        const driftY = Math.cos(t * blob.speed * 0.7 + blob.phase) * 60;
+        // Subtle mouse attraction: 15px toward cursor
+        const attractX = (mx - blob.ox) * 15;
+        const attractY = (my - blob.oy) * 15;
+
+        const bx = blob.ox * W + driftX + attractX;
+        const by = blob.oy * H + driftY + attractY;
+        const r  = blob.size / 2;
+
+        const grad = ctx.createRadialGradient(bx, by, 0, bx, by, r);
+        grad.addColorStop(0, blob.color + '1f'); // opacity ~0.12
+        grad.addColorStop(1, blob.color + '00');
+        ctx.filter = 'blur(60px)';
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(bx, by, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.filter = 'none';
+      });
+
+      // ── Floating code tokens ───────────────────────────────────────────────
       ctx.font = '13px "JetBrains Mono", monospace';
       tokens.forEach(tok => {
         tok.y -= tok.speed;
-        if (tok.y < -5) { tok.y = 105; tok.x = Math.random() * 100; }
-        const px = tok.x / 100 * width;
-        const py = tok.y / 100 * height;
-        ctx.globalAlpha = tok.opacity;
-        ctx.fillStyle = '#22c55e';
-        ctx.fillText(tok.text, px, py);
-      });
-      ctx.globalAlpha = 1;
+        tok.x += tok.drift;
+        if (tok.y < -0.05) { tok.y = 1.08; tok.x = 0.05 + Math.random() * 0.9; }
+        if (tok.x < 0 || tok.x > 1) tok.drift *= -1;
 
-      rafRef.current = requestAnimationFrame(draw);
+        ctx.fillStyle = `rgba(255,255,255,${tok.alpha})`;
+        ctx.fillText(tok.str, tok.x * W, tok.y * H);
+      });
     };
 
     rafRef.current = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      resizeObserver.disconnect();
-      canvas.parentElement?.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMouseMove);
     };
   }, [canvasRef]);
 }
