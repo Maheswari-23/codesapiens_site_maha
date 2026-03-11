@@ -489,12 +489,15 @@ const LANDING_STYLES = `
   .code-line .var { color: var(--text-primary); }
   .code-line .op { color: var(--text-muted); font-weight: 500; }
   .code-line .val { 
-    color: var(--secondary); 
+    background: linear-gradient(90deg, #6366f1, #a855f7, #22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 2.2rem; 
     font-weight: 800; 
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.02em;
-    text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+    display: inline-block;
   }
   .code-comment {
     margin-top: 1rem;
@@ -983,7 +986,7 @@ const LANDING_STYLES = `
     font-size: 0.7rem;
     font-weight: 700;
     text-align: center;
-    color: var(--text-primary);
+    color: var(--primary);
     margin-bottom: 0.25rem;
     padding: 0 0.5rem;
     max-width: 100%;
