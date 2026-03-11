@@ -210,26 +210,216 @@ const LANDING_STYLES = `
     box-shadow: 0 0 8px #6366f140;
   }
 
-  /* ── Sponsor card gradient hover ── */
-  .sponsor-card-gradient {
-    background: #0f1729;
-    border: 1px solid #1e293b;
-    border-radius: 12px;
-    padding: 2rem;
+  /* ── Sponsor cyber cards (aligned with hero theme) ── */
+  .sponsor-parent {
+    width: 100%;
+    padding: 0.75rem;
+    perspective: 1000px;
+  }
+  .sponsor-card-3d {
     position: relative;
+    padding-top: 3rem;
+    border: 1px solid #0b1220;
+    transform-style: preserve-3d;
+    /* Clean cyber panel background aligned to theme */
+    background: linear-gradient(135deg, #020617 0%, #020617 45%, #020617 100%);
+    width: 100%;
+    box-shadow:
+      0 0 20px rgba(15, 23, 42, 0.6),
+      inset 0 0 16px rgba(15, 23, 42, 0.8);
+    transition: all 0.5s ease-in-out;
+    border-radius: 0.75rem;
     overflow: hidden;
-    transition: all 0.4s ease;
   }
-  .sponsor-card-gradient:hover {
-    box-shadow: 0 0 0 1px #6366f140, 0 8px 32px #6366f115;
+  .sponsor-card-3d:hover {
+    transform: rotate3d(0.4, 0.8, 0, 16deg);
+    filter: brightness(1.1);
   }
-  .sponsor-card-gradient img {
-    filter: grayscale(1) brightness(0.7);
-    transition: all 0.4s ease;
+  .sponsor-content-box {
+    background: #020617;
+    border-radius: 0.75rem 2.5rem 0.75rem 0.75rem;
+    transition: all 0.5s ease-in-out;
+    padding: 3.5rem 1.25rem 1.25rem 1.25rem;
+    transform-style: preserve-3d;
+    border: 1px solid #1e293b;
+    position: relative;
+    z-index: 2;
   }
-  .sponsor-card-gradient:hover img {
-    filter: grayscale(0) brightness(1);
-    transform: scale(1.05);
+  .sponsor-logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 72px;
+    transform: translate3d(0, 0, 40px);
+  }
+  .sponsor-logo {
+    max-width: 100%;
+    max-height: 72px;
+    object-fit: contain;
+    filter: grayscale(1) brightness(0.9);
+    transition: transform 0.5s ease, filter 0.5s ease;
+  }
+  .sponsor-card-3d:hover .sponsor-logo {
+    filter: grayscale(0) brightness(1.05);
+    transform: translate3d(0, 0, 60px) scale(1.03);
+  }
+  .sponsor-name {
+    margin-top: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #9ca3af;
+    transform: translate3d(0, 0, 30px);
+  }
+  .sponsor-pill {
+    display: none;
+  }
+  .sponsor-pill span {
+    display: block;
+    text-align: center;
+  }
+  .sponsor-pill-label {
+    color: var(--secondary);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+  .sponsor-pill-index {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--secondary);
+  }
+  .sponsor-glare {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      125deg,
+      rgba(255,255,255,0) 0%,
+      rgba(148, 163, 184, 0.04) 45%,
+      rgba(148, 163, 184, 0.1) 50%,
+      rgba(148, 163, 184, 0.04) 55%,
+      rgba(255,255,255,0) 100%
+    );
+    opacity: 0;
+    transition: opacity 300ms;
+    z-index: 1;
+  }
+  .sponsor-card-3d:hover .sponsor-glare {
+    opacity: 1;
+  }
+  .sponsor-lines span {
+    position: absolute;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(99, 102, 241, 0.25),
+      transparent
+    );
+  }
+  .sponsor-lines span:nth-child(1),
+  .sponsor-lines span:nth-child(2),
+  .sponsor-lines span:nth-child(3),
+  .sponsor-lines span:nth-child(4) {
+    width: 100%;
+    height: 1px;
+    transform: scaleX(0);
+    opacity: 0;
+    animation: sponsorLineGrow 3s linear infinite;
+  }
+  .sponsor-lines span:nth-child(1) {
+    top: 25%;
+    left: 0;
+    transform-origin: left;
+  }
+  .sponsor-lines span:nth-child(2) {
+    top: 45%;
+    right: 0;
+    transform-origin: right;
+    animation-delay: 0.7s;
+  }
+  .sponsor-lines span:nth-child(3) {
+    top: 65%;
+    left: 0;
+    transform-origin: left;
+    animation-delay: 1.4s;
+  }
+  .sponsor-lines span:nth-child(4) {
+    top: 82%;
+    right: 0;
+    transform-origin: right;
+    animation-delay: 2.1s;
+  }
+  .sponsor-corners span {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    transition: all 0.3s ease;
+  }
+  .sponsor-corners span:nth-child(1) {
+    top: 10px;
+    left: 10px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .sponsor-corners span:nth-child(2) {
+    top: 10px;
+    right: 10px;
+    border-left: 0;
+    border-bottom: 0;
+  }
+  .sponsor-corners span:nth-child(3) {
+    bottom: 10px;
+    left: 10px;
+    border-right: 0;
+    border-top: 0;
+  }
+  .sponsor-corners span:nth-child(4) {
+    bottom: 10px;
+    right: 10px;
+    border-left: 0;
+    border-top: 0;
+  }
+  .sponsor-scan {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(99, 102, 241, 0.1),
+      transparent
+    );
+    transform: translateY(-100%);
+    animation: sponsorScanMove 2.4s linear infinite;
+    opacity: 0.75;
+    z-index: 1;
+  }
+  .sponsor-card-3d:hover .sponsor-corners span {
+    border-color: rgba(129, 140, 248, 0.9);
+    box-shadow: 0 0 10px rgba(129, 140, 248, 0.55);
+  }
+  @keyframes sponsorLineGrow {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+  }
+  @keyframes sponsorScanMove {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100%);
+    }
   }
 
   /* ── Impact stat cards (IDE variable style) ── */
@@ -763,15 +953,35 @@ const SponsorSection = () => {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {sponsors.map((s, i) => (
-            <a key={i} href={s.link} target="_blank" rel="noopener noreferrer"
-              className="sponsor-card-gradient flex flex-col items-center gap-3 no-underline group"
-              onMouseMove={handleSponsorMouseMove}
-              onMouseLeave={handleSponsorMouseLeave}>
-              <div className="w-full aspect-square flex items-center justify-center p-3">
-                <img src={s.image} alt={s.name} className="max-w-full max-h-full object-contain" />
-              </div>
-              <span className="font-mono text-xs truncate w-full text-center" style={{ color: 'var(--text-muted)' }}>{s.name}</span>
-            </a>
+            <div key={i} className="sponsor-parent">
+              <a
+                href={s.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline"
+              >
+                <div className="sponsor-card-3d">
+                  <div className="sponsor-glare" />
+                  <div className="sponsor-scan" />
+                  <div className="sponsor-content-box">
+                    <div className="sponsor-lines">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                    <img src={s.image} alt={s.name} className="sponsor-logo" />
+                    <span className="sponsor-name">{s.name}</span>
+                  </div>
+                  <div className="sponsor-corners">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </a>
+            </div>
           ))}
         </div>
       </div>
@@ -1201,7 +1411,7 @@ const CodeSapiensHero = () => {
               <div className="flex gap-12 pt-8" style={{borderTop:'1px solid var(--border)'}}>
                 {[{val:'2000+',lbl:'Active members'},{val:'15+',lbl:'Events hosted'}].map((s,i)=>(
                   <div key={i}>
-                    <p className="font-extrabold mb-0.5" style={{fontSize:'2.5rem',letterSpacing:'-0.04em',lineHeight:1,color:'var(--secondary)'}}>{s.val}</p>
+                    <p className="font-extrabold mb-0.5 grad-text" style={{fontSize:'2.5rem',letterSpacing:'-0.04em',lineHeight:1}}>{s.val}</p>
                     <p className="text-xs uppercase tracking-widest font-semibold" style={{color:'var(--text-muted)',letterSpacing:'0.08em'}}>{s.lbl}</p>
                   </div>
                 ))}
