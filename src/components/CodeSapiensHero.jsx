@@ -1227,7 +1227,7 @@ const FoundersSection = ({ founders }) => {
 
   return (
     <motion.section id="community" ref={sectionRef} className="py-24 relative"
-      style={{ borderTop:'1px solid var(--border)', position: 'relative', zIndex: 1 }}
+      style={{ background: 'var(--bg-base)', borderTop:'1px solid var(--border)', position: 'relative', zIndex: 1 }}
       initial={{ opacity:0, y:32 }} whileInView={{ opacity:1, y:0 }}
       transition={{ type:'spring', stiffness:60, damping:20 }} viewport={{ once:true, amount:0.1 }}>
       <div className="max-w-7xl mx-auto px-6">
