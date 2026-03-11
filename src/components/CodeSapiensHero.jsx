@@ -718,9 +718,6 @@ const LANDING_STYLES = `
     margin: 4rem 0;
     overflow: visible;
   }
-  @media (max-width: 640px) {
-    .community-3d-scene { height: 280px; margin: 2rem 0; }
-    .community-3d-carousel { width: 180px; height: 120px; }
     .carousel-photo-wrap { width: 160px; height: 110px; }
   }
   .community-3d-carousel {
@@ -1762,7 +1759,7 @@ const CodeSapiensHero = () => {
                 <span style={{color:'var(--text-muted)'}}>Tamil Nadu's largest student dev community</span>
               </motion.div>
 
-              <motion.h1 className="font-extrabold mb-4" style={{fontSize:'clamp(3rem,8vw,7rem)',letterSpacing:'-0.04em',lineHeight:1.05,color:'var(--text-primary)'}}
+              <motion.h1 className="font-extrabold mb-4" style={{fontSize: isMobile ? '2.5rem' : 'clamp(3rem,8vw,7rem)',letterSpacing:'-0.04em',lineHeight:1.05,color:'var(--text-primary)'}}
                 initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{delay:0.2,type:'spring',stiffness:80,damping:20}}>
                 We are{' '}
                 <span className="grad-text">CodeSapiens</span>
