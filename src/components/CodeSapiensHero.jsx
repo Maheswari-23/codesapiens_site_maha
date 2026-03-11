@@ -218,32 +218,35 @@ const LANDING_STYLES = `
   }
   .sponsor-card-3d {
     position: relative;
-    padding-top: 3rem;
-    border: 1px solid #0b1220;
+    padding-top: 0;
+    border: 1px solid rgba(99,102,241,0.25);
     transform-style: preserve-3d;
-    /* Clean cyber panel background aligned to theme */
-    background: linear-gradient(135deg, #020617 0%, #020617 45%, #020617 100%);
+    background: transparent;
     width: 100%;
-    box-shadow:
-      0 0 20px rgba(15, 23, 42, 0.6),
-      inset 0 0 16px rgba(15, 23, 42, 0.8);
+    box-shadow: none;
     transition: all 0.5s ease-in-out;
     border-radius: 0.75rem;
     overflow: hidden;
   }
   .sponsor-card-3d:hover {
     transform: rotate3d(0.4, 0.8, 0, 16deg);
-    filter: brightness(1.1);
+    border-color: rgba(99,102,241,0.6);
+    box-shadow: 0 0 24px rgba(99,102,241,0.2);
   }
   .sponsor-content-box {
-    background: #020617;
-    border-radius: 0.75rem 2.5rem 0.75rem 0.75rem;
+    background: transparent;
+    border-radius: 0.75rem;
     transition: all 0.5s ease-in-out;
-    padding: 3.5rem 1.25rem 1.25rem 1.25rem;
+    padding: 1.5rem 1rem;
     transform-style: preserve-3d;
-    border: 1px solid #1e293b;
+    border: none;
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
   }
   .sponsor-logo-wrap {
     display: flex;
@@ -253,24 +256,29 @@ const LANDING_STYLES = `
     transform: translate3d(0, 0, 40px);
   }
   .sponsor-logo {
-    max-width: 100%;
-    max-height: 72px;
+    width: 64px;
+    height: 64px;
     object-fit: contain;
-    filter: grayscale(1) brightness(0.9);
+    display: block;
+    margin: 0 auto;
+    filter: grayscale(0) brightness(1);
     transition: transform 0.5s ease, filter 0.5s ease;
   }
   .sponsor-card-3d:hover .sponsor-logo {
-    filter: grayscale(0) brightness(1.05);
-    transform: translate3d(0, 0, 60px) scale(1.03);
+    filter: grayscale(1) brightness(0.7);
+    transform: translate3d(0, 0, 60px) scale(1.08);
   }
   .sponsor-name {
-    margin-top: 0.75rem;
+    margin-top: 0;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
+    font-weight: 700;
+    text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: #9ca3af;
+    color: #e2e8f0;
     transform: translate3d(0, 0, 30px);
+    display: block;
   }
   .sponsor-pill {
     display: none;
@@ -797,6 +805,109 @@ const LANDING_STYLES = `
     transform: rotate(-6deg) translate(3%, 8%) scale(1.3);
     box-shadow: 0 20px 60px rgba(99,102,241,0.3), 0 0 40px rgba(34,211,238,0.1);
   }
+
+  /* ── Terminal / Notice section ── */
+  @keyframes termScan {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+  }
+  @keyframes termBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes termStream {
+    from { opacity:0; transform: translateY(6px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .term-card {
+    background: #0f1729;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #6366f110, 0 4px 24px rgba(0,0,0,0.4);
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    position: relative;
+  }
+  .term-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(99,102,241,0.012) 3px,
+      rgba(99,102,241,0.012) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+  .term-card:hover {
+    border-color: #6366f160;
+    box-shadow: 0 0 0 1px #6366f130, 0 8px 40px rgba(99,102,241,0.15);
+  }
+  .term-chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    background: #020817;
+    border-bottom: 1px solid #1e293b;
+    position: relative;
+    z-index: 1;
+  }
+  .term-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .term-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.9;
+    margin-left: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+  .term-body {
+    padding: 1rem 1.2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .term-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-body);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+    animation: termStream 0.3s ease forwards;
+  }
+  .term-line.dim  { color: var(--text-muted); font-size: 0.72rem; }
+  .term-line.warn { color: #f59e0b; }
+  .term-line.cmd  { color: var(--secondary); }
+  .term-cursor {
+    display: inline-block;
+    width: 8px; height: 1em;
+    background: var(--primary);
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: termBlink 1s step-end infinite;
+  }
+  .term-img-wrap {
+    margin-top: 0.75rem;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #1e293b;
+    height: 220px;
+  }
+  .term-img-wrap img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    filter: saturate(0.9) brightness(0.85);
+    transition: filter 0.4s ease;
+  }
+  .term-card:hover .term-img-wrap img {
+    filter: saturate(1.1) brightness(1);
+  }
 `;
 
 // ─── Reusable card entrance variants ─────────────────────────────────────────
@@ -990,6 +1101,59 @@ const SponsorSection = () => {
 };
 
 // ─── CommunityPartners ────────────────────────────────────────────────────────
+const CommunityPartnerCard = ({ image }) => {
+  const cardRef = useRef(null);
+
+  const handleMove = (e) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const rotX = -(y / (rect.height / 2)) * 18;
+    const rotY =  (x / (rect.width  / 2)) * 18;
+    card.style.transform = `perspective(600px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.08)`;
+    card.style.boxShadow = `${-rotY * 1.2}px ${rotX * 1.2}px 40px rgba(99,102,241,0.35)`;
+  };
+
+  const handleLeave = () => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)';
+    card.style.boxShadow = '0 0 0 rgba(99,102,241,0)';
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{
+        width: 180, height: 180,
+        borderRadius: '50%',
+        border: '1.5px solid rgba(99,102,241,0.3)',
+        background: 'transparent',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+        cursor: 'none',
+        flexShrink: 0,
+      }}
+    >
+      <img
+        src={image}
+        alt="Community Partner"
+        style={{
+          width: '70%', height: '70%',
+          objectFit: 'contain',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      />
+    </div>
+  );
+};
+
 const CommunityPartners = () => {
   const partners = [
     { image:'https://res.cloudinary.com/dqudvximt/image/upload/v1767817843/users_cme79i2lk00qls401ar5qxqnc_OGGz5HgXCzS9rI8H-users_clylc5w1v070to301jatq0e85_bNj4z9CoW02cMzqm-circle_rs5ttj.png' },
@@ -1003,11 +1167,9 @@ const CommunityPartners = () => {
           <span className="ide-prompt">$</span>
           <span>ls --community-partners</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', flexWrap: 'wrap' }}>
           {partners.map((p, i) => (
-            <SpotlightCard key={i} index={i} className="p-6 flex items-center justify-center aspect-video group">
-              <img src={p.image} alt="Community Partner" className="max-w-[70%] max-h-[70%] object-contain group-hover:scale-105 transition-transform duration-500" />
-            </SpotlightCard>
+            <CommunityPartnerCard key={i} image={p.image} />
           ))}
         </div>
       </div>
@@ -1101,24 +1263,115 @@ const FoundersSection = ({ founders }) => {
 };
 
 // ─── NoticeSection ────────────────────────────────────────────────────────────
+const TerminalCard = ({ filename, lines, imgSrc, imgAlt, delay = 0 }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const [shown, setShown] = useState([]);
+
+  useEffect(() => {
+    if (!inView) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setShown(prev => [...prev, i]);
+      i++;
+      if (i >= lines.length) clearInterval(interval);
+    }, 220);
+    return () => clearInterval(interval);
+  }, [inView, lines.length]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="term-card"
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ type: 'spring', stiffness: 70, damping: 18, delay }}
+    >
+      {/* Terminal chrome */}
+      <div className="term-chrome">
+        <span className="term-dot" style={{ background: '#ff5f57' }} />
+        <span className="term-dot" style={{ background: '#febc2e' }} />
+        <span className="term-dot" style={{ background: '#28c840' }} />
+        <span className="term-title">~/codesapiens/{filename}</span>
+      </div>
+
+      {/* Streaming lines */}
+      <div className="term-body">
+        {lines.map((l, i) =>
+          shown.includes(i) ? (
+            <div key={i} className={`term-line${l.type ? ' ' + l.type : ''}`}
+              style={{ animationDelay: `${i * 0.05}s` }}>
+              {l.prefix && <span style={{ color: '#22d3ee', marginRight: '0.5rem' }}>{l.prefix}</span>}
+              {l.text}
+            </div>
+          ) : null
+        )}
+
+        {/* blinking cursor appears after last shown line */}
+        {shown.length > 0 && shown.length < lines.length && (
+          <div className="term-line"><span className="term-cursor" /></div>
+        )}
+        {shown.length === lines.length && (
+          <div className="term-line dim">{'// EOF'}<span className="term-cursor" /></div>
+        )}
+
+        {/* Image rendered as 'file output' */}
+        {imgSrc && shown.length >= lines.length && (
+          <motion.div
+            className="term-img-wrap"
+            initial={{ opacity: 0, scaleY: 0.8 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <img src={imgSrc} alt={imgAlt} />
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
 const NoticeSection = () => (
-  <section className="py-12 relative" style={{ background: 'var(--bg-base)', borderTop: '1px solid var(--border)' }}>
+  <section className="py-16 relative" style={{ background: 'var(--bg-base)', borderTop: '1px solid var(--border)' }}>
     <div className="container mx-auto px-6">
-      <div className="ide-label mb-6">
+
+      {/* IDE Label */}
+      <div className="ide-label mb-10">
         <span className="ide-prompt">$</span>
         <span>cat --latest-updates</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-        {[
-          { src:'https://res.cloudinary.com/dqudvximt/image/upload/v1767877162/users_cme79i2lk00qls401ar5qxqnc_N0bIjmMP0Ybxoznz-1753684368888_jda3us.jpg', alt:'Call for Speakers' },
-          { src:'https://res.cloudinary.com/dqudvximt/image/upload/v1767877178/users_cme79i2lk00qls401ar5qxqnc_KB4hFvAzhyqJF0xf-3a61cb74-01c9-4880-be04-a4036f32c4f9_t64kt9.jpg', alt:'Call for Sponsors' },
-        ].map((item, i) => (
-          <SpotlightCard key={i} index={i} style={{ padding: 0 }}>
-            <div className="overflow-hidden rounded-xl group">
-              <img src={item.src} alt={item.alt} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" />
-            </div>
-          </SpotlightCard>
-        ))}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+        <TerminalCard
+          filename="call-for-speakers.txt"
+          delay={0}
+          lines={[
+            { prefix: '>>',  text: 'Reading file: call-for-speakers.txt' },
+            { type: 'dim',   text: '# CodeSapiens Community Event' },
+            { prefix: '[1]', text: 'Event Type   : Open Speaker Call' },
+            { prefix: '[2]', text: 'Audience     : Students & Devs' },
+            { prefix: '[3]', text: 'Topics       : Tech / Web / AI / Open Source' },
+            { type: 'warn',  text: '⚡ Applications closing soon!' },
+            { type: 'cmd',   text: '→  Apply now at lu.ma/codesapiens' },
+          ]}
+          imgSrc="https://res.cloudinary.com/dqudvximt/image/upload/v1767877162/users_cme79i2lk00qls401ar5qxqnc_N0bIjmMP0Ybxoznz-1753684368888_jda3us.jpg"
+          imgAlt="Call for Speakers"
+        />
+        <TerminalCard
+          filename="call-for-sponsors.txt"
+          delay={0.15}
+          lines={[
+            { prefix: '>>',  text: 'Reading file: call-for-sponsors.txt' },
+            { type: 'dim',   text: '# Sponsorship Opportunities' },
+            { prefix: '[1]', text: 'Tier         : Gold / Silver / Bronze' },
+            { prefix: '[2]', text: 'Reach        : 2000+ student devs' },
+            { prefix: '[3]', text: 'Benefits     : Branding + Talks + Booth' },
+            { type: 'warn',  text: '⚡ Limited sponsorship slots left!' },
+            { type: 'cmd',   text: '→  Contact: codesapiens.in@gmail.com' },
+          ]}
+          imgSrc="https://res.cloudinary.com/dqudvximt/image/upload/v1767877178/users_cme79i2lk00qls401ar5qxqnc_KB4hFvAzhyqJF0xf-3a61cb74-01c9-4880-be04-a4036f32c4f9_t64kt9.jpg"
+          imgAlt="Call for Sponsors"
+        />
       </div>
     </div>
   </section>
@@ -1128,8 +1381,9 @@ const NoticeSection = () => (
 const CodeSapiensHero = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen]     = useState(false);
-  const [hallOfFame, setHallOfFame]     = useState([]);
-  const [communityPhotos, setCommunity] = useState([]);
+  const [hallOfFame, setHallOfFame]         = useState([]);
+  const [communityPhotos, setCommunity]     = useState([]);
+  const [communityLoading, setCommunityLoading] = useState(true);
   const wrapRef   = useRef(null);
   const canvasRef = useRef(null);
   const heroRef   = useRef(null);
@@ -1205,8 +1459,9 @@ const CodeSapiensHero = () => {
       if (hof) setHallOfFame(hof);
       const { data: ph } = await supabase.from('community_photos').select('*').eq('is_active',true).order('order_number',{ascending:true});
       if (ph) setCommunity(ph);
+      setCommunityLoading(false);
     };
-    load();
+    load().catch(() => setCommunityLoading(false));
   }, []);
 
   const volunteers = [
@@ -1425,31 +1680,59 @@ const CodeSapiensHero = () => {
         </div>
       </motion.section>
 
-          {/* ── Events / Community Moments ── */}
+      {/* ── Events / Community Moments ── */}
       <motion.section id="events" className="py-24 relative"
         style={{background:'var(--bg-base)',borderTop:'1px solid var(--border)'}}
         initial={{opacity:0,y:32}} whileInView={{opacity:1,y:0}}
         transition={{type:'spring',stiffness:60,damping:20}} viewport={{once:true,amount:0.1}}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="ide-label mb-10"><span className="ide-prompt">$</span><span>ls --events --community-moments</span></div>
-          <div className="tilted-grid">
-            {communityPhotos.slice(0,6).map((photo, i) => (
-              <div key={photo.id} className="tilted-card">
-                <div className="tilted-card-inner">
-                  <img
-                    src={photo.image_url}
-                    alt={photo.title}
-                    className={`tilted-card-img ${i % 2 === 0 ? 'img-odd' : 'img-even'}`}
-                    style={i % 2 === 0
-                      ? { transform: 'translateX(-70%) translateY(-105%) rotateZ(-45deg)' }
-                      : { transform: 'translateX(-30%) translateY(5%) rotateZ(135deg)' }
-                    }
-                  />
-                  <h2 className="tilted-card-label">{photo.title}</h2>
+
+          {communityLoading ? (
+            <div className="tilted-grid">
+              {Array.from({length: 6}).map((_, i) => (
+                <div key={i} className="tilted-card">
+                  <div className="tilted-card-inner" style={{
+                    background: 'linear-gradient(135deg,#0f1729,#1e293b)',
+                    animation: 'pulse 1.8s ease-in-out infinite',
+                  }} />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : communityPhotos.length === 0 ? (
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              justifyContent: 'center', gap: '1rem', padding: '4rem 2rem',
+              border: '1px dashed #1e293b', borderRadius: '16px',
+              background: '#0f172940',
+            }}>
+              <p className="font-mono text-sm" style={{color:'var(--text-code)'}}>
+                {'// community_moments.length === 0'}
+              </p>
+              <p className="font-mono text-xs" style={{color:'var(--text-muted)'}}>
+                No moments uploaded yet. Check back soon!
+              </p>
+            </div>
+          ) : (
+            <div className="tilted-grid">
+              {communityPhotos.slice(0,6).map((photo, i) => (
+                <div key={photo.id} className="tilted-card">
+                  <div className="tilted-card-inner">
+                    <img
+                      src={photo.image_url}
+                      alt={photo.title}
+                      className={`tilted-card-img ${i % 2 === 0 ? 'img-odd' : 'img-even'}`}
+                      style={i % 2 === 0
+                        ? { transform: 'translateX(-70%) translateY(-105%) rotateZ(-45deg)' }
+                        : { transform: 'translateX(-30%) translateY(5%) rotateZ(135deg)' }
+                      }
+                    />
+                    <h2 className="tilted-card-label">{photo.title}</h2>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </motion.section>
 
