@@ -430,39 +430,77 @@ const LANDING_STYLES = `
     }
   }
 
-  /* ── Impact stat cards (IDE variable style) ── */
+  /* ── Impact stat cards (Code Fragment Redesign) ── */
   .impact-stat-card {
     background: #0f1729;
     border: 1px solid #1e293b;
-    border-left: 3px solid #6366f1;
-    border-radius: 0 12px 12px 0;
-    padding: 1.5rem 2rem;
+    border-radius: 12px;
     font-family: 'JetBrains Mono', monospace;
     position: relative;
     overflow: hidden;
+    height: 100%;
+    display: flex;
+    box-shadow: inset 0 0 30px rgba(99, 102, 241, 0.05);
+    transition: all 0.3s ease;
   }
-  .impact-stat-card .stat-label {
-    color: #475569;
+  .impact-stat-card:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: inset 0 0 40px rgba(99, 102, 241, 0.08), 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .impact-stat-gutter {
+    width: 40px;
+    background: #020817;
+    border-right: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
     font-size: 0.75rem;
-    letter-spacing: 0.02em;
-  }
-  .impact-stat-card .stat-label .const { color: #10b981; }
-  .impact-stat-card .stat-number {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 800;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #6366f1, #22d3ee);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .impact-stat-card .stat-desc {
     color: #475569;
-    font-size: 0.8rem;
-    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
   }
-  .impact-stat-card .stat-desc .comment { color: #10b981; }
-  .impact-stat-card::after { display: none; }
+  .impact-stat-content {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    line-height: 1.4;
+  }
+  .code-line .const { color: #a855f7; font-weight: 700; }
+  .code-line .var { color: var(--text-primary); }
+  .code-line .op { color: var(--text-muted); font-weight: 500; }
+  .code-line .val { 
+    color: var(--secondary); 
+    font-size: 2.2rem; 
+    font-weight: 800; 
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  }
+  .code-comment {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #10b981;
+    opacity: 0.7;
+    font-style: italic;
+  }
+  .stat-glow {
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    width: 60%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
 
   /* ── Mascot (hero) — spotlight reveal ── */
   .mascot-wrapper {
@@ -654,130 +692,73 @@ const LANDING_STYLES = `
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
 
-  /* ── Tilted card grid ── */
-  .tilted-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 3vw;
-    transform-origin: top right;
-    transform: skewY(-4.398705355deg);
-    margin: 0 auto;
-    padding: 2rem;
+  /* ── 3D Community Carousel ── */
+  .community-3d-scene {
+    perspective: 1200px;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4rem 0;
+    overflow: visible;
   }
-  @media (min-width: 600px) {
-    .tilted-grid { grid-template-columns: repeat(3, 1fr); gap: 2vw; }
-  }
-  @media (min-width: 900px) {
-    .tilted-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5vw; }
-  }
-  @media (min-width: 1200px) {
-    .tilted-grid { grid-template-columns: repeat(5, 1fr); gap: 1vw; }
-  }
-
-  .tilted-card {
-    transform-origin: top left;
-    transform: skewY(4.398705355deg) rotateZ(14.03624deg);
-    padding-top: 120%;
+  .community-3d-carousel {
     position: relative;
-    z-index: 1;
-    transition: z-index 0.3s;
-    cursor: none;
+    width: 300px;
+    height: 200px;
+    transform-style: preserve-3d;
+    animation: rotate-carousel 25s linear infinite;
   }
-  .tilted-card:hover { z-index: 10; }
-
-  .tilted-card-inner {
+  .community-3d-carousel:hover {
+    animation-play-state: paused;
+  }
+  .carousel-photo-wrap {
     position: absolute;
-    z-index: 2;
-    width: 98%;
-    height: 95%;
-    top: 0;
-    background: #0f1729;
+    width: 280px;
+    height: 180px;
+    left: 10px;
+    top: 10px;
     border-radius: 12px;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    box-shadow:
-      inset 0 0 0 20px #111827,
-      0 4px 24px rgba(0,0,0,0.4);
-    box-sizing: border-box;
     overflow: hidden;
-    transform: rotate(0deg) translate(0, 0);
-    transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94),
-                border-color 0.4s ease,
-                box-shadow 0.4s ease;
+    border: 2px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background: var(--bg-surface);
+    transition: transform 0.3s ease, border-color 0.3s ease;
   }
-  .tilted-card:hover .tilted-card-inner {
-    transform: rotate(-14.03624deg) translate(5.5%, 15%) scale(1.5);
-    border-color: rgba(99, 102, 241, 0.6);
-    box-shadow:
-      inset 0 0 0 20px #111827,
-      0 20px 60px rgba(99, 102, 241, 0.3),
-      0 0 40px rgba(34, 211, 238, 0.1);
+  .carousel-photo-wrap:hover {
+    border-color: var(--primary-color);
   }
-
-  .tilted-card.hof:hover .tilted-card-inner {
-    border-color: rgba(245, 158, 11, 0.6);
-    box-shadow:
-      inset 0 0 0 20px #111827,
-      0 20px 60px rgba(245, 158, 11, 0.2),
-      0 0 40px rgba(245, 158, 11, 0.1);
-  }
-
-  .tilted-card-inner::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 50%, rgba(2, 8, 23, 0.8) 100%);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .tilted-card-img {
-    position: absolute;
-    width: 84%;
-    top: 50%;
-    left: 50%;
-    z-index: 4;
-    border-radius: 8px;
-    filter: brightness(0.7) saturate(0.8);
-    transition: width 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+  .carousel-photo-wrap img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    filter: brightness(0.8) saturate(1.1);
+    transition: filter 0.3s ease;
   }
-  .tilted-card:hover .tilted-card-img.img-odd {
-    width: 120%;
-    transform: translateX(-65%) translateY(-75%) rotateZ(-45deg) !important;
-    filter: brightness(1) saturate(1.2);
+  .carousel-photo-wrap:hover img {
+    filter: brightness(1) saturate(1.3);
   }
-  .tilted-card:hover .tilted-card-img.img-even {
-    width: 60%;
-    transform: translateX(-15%) translateY(60%) rotateZ(135deg) !important;
-    filter: brightness(1) saturate(1.2);
+  .carousel-photo-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
   }
 
-  .tilted-card-label {
-    position: absolute;
-    text-align: center;
-    width: 122%;
-    left: -11%;
-    top: 46%;
-    transform: rotateZ(-45deg);
-    background: linear-gradient(135deg, #6366f1, #22d3ee);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 0.85em;
-    line-height: 140%;
-    transition: top 0.3s ease;
-    z-index: 5;
-    pointer-events: none;
+  @keyframes rotate-carousel {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
   }
-  .tilted-card.hof .tilted-card-label {
-    background: linear-gradient(135deg, #f59e0b, #fcd34d);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .tilted-card:hover .tilted-card-label { top: 64%; }
+
+  /* Note: The JS will calculate the rotation for each photo:
+     transform: rotateY(i * (360/total)) translateZ(450px)
+  */
 
   /* Impact stat mild tilt */
   .impact-tilt-grid {
@@ -908,6 +889,125 @@ const LANDING_STYLES = `
   .term-card:hover .term-img-wrap img {
     filter: saturate(1.1) brightness(1);
   }
+
+  /* ── Podium / Award Steps ── */
+  .podium-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    min-height: 200px;
+  }
+  .podium-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33%;
+    position: relative;
+  }
+  .podium-step {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 1rem;
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .podium-item:hover .podium-step {
+    border-color: #6366f160;
+    box-shadow: 0 0 20px #6366f120;
+  }
+  .podium-rank-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    border: 3px solid rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    z-index: 2;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+    aspect-ratio: 1/1;
+  }
+  .podium-item:hover .podium-rank-badge {
+    transform: scale(1.15) translateY(-5px);
+    border-color: rgba(255,255,255,0.6);
+  }
+  .podium-rank-badge::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.6), transparent);
+    transform: rotate(45deg);
+    animation: badge-shine 2.5s infinite;
+  }
+  @keyframes badge-shine {
+    0% { transform: translate(-100%, -100%) rotate(45deg); }
+    100% { transform: translate(100%, 100%) rotate(45deg); }
+  }
+
+  .rank-1 .podium-rank-badge { 
+    background: radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b); 
+    color: #451a03; 
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.7), inset 0 0 15px rgba(255,255,255,0.6); 
+  }
+  .rank-2 .podium-rank-badge { 
+    background: radial-gradient(circle at 30% 30%, #f1f5f9, #94a3b8); 
+    color: #0f172a; 
+    box-shadow: 0 0 25px rgba(148, 163, 184, 0.5), inset 0 0 12px rgba(255,255,255,0.5); 
+  }
+  .rank-3 .podium-rank-badge { 
+    background: radial-gradient(circle at 30% 30%, #fb923c, #b45309); 
+    color: #451a03; 
+    box-shadow: 0 0 20px rgba(180, 83, 9, 0.5), inset 0 0 10px rgba(255,255,255,0.4); 
+  }
+
+  .podium-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    padding: 0 0.5rem;
+    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .podium-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-code);
+  }
+  
+  .rank-1 .podium-step { height: 160px; border-top: 2px solid #f59e0b; padding-bottom: 1rem; }
+  .rank-2 .podium-step { height: 130px; border-top: 2px solid #94a3b8; padding-bottom: 0.75rem; }
+  .rank-3 .podium-step { height: 110px; border-top: 2px solid #b45309; padding-bottom: 0.5rem; }
+
+  @media (max-width: 640px) {
+    .podium-container { gap: 0.5rem; }
+    .podium-name { font-size: 0.6rem; }
+    .podium-count { font-size: 0.65rem; }
+  }
 `;
 
 // ─── Reusable card entrance variants ─────────────────────────────────────────
@@ -949,11 +1049,20 @@ const SpotlightCard = ({ children, className = '', index = 0, tilt = false, styl
 const StatsSection = () => {
   const ref   = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.3 });
-  const [stats, setStats]   = useState({ topColleges: [], totalUsers: 0, collegesCount: 0 });
+  const [stats, setStats]   = useState({ 
+    topColleges: [
+      { name: "Rajalakshmi Engineering College", count: 52 },
+      { name: "Sri Sairam Engineering College", count: 49 },
+      { name: "Panimalar Engineering College", count: 45 },
+      { name: "Mazharul Uloom College, Ambur", count: 11 }
+    ], 
+    totalUsers: 2000, 
+    totalColleges: 100 
+  });
   const [loading, setLoading] = useState(true);
 
   const count1 = useCountUp(stats.totalUsers   || 2000, inView);
-  const count2 = useCountUp(stats.collegesCount || 50,  inView);
+  const count2 = useCountUp(stats.totalColleges || 100,  inView);
 
   useEffect(() => {
     authFetch(`${BACKEND_URL}/api/public-stats`)
@@ -983,55 +1092,74 @@ const StatsSection = () => {
             {statCards.map((item, i) => (
               <motion.div
                 key={i}
-                className="impact-stat-card h-full flex flex-col justify-center"
-                initial={{ opacity: 0, y: 16 }}
-                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                transition={{ type: 'spring', stiffness: 100, damping: 12, delay: i * 0.1 }}
+                className="impact-stat-card"
+                initial={{ opacity: 0, x: -20 }}
+                animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 15, delay: i * 0.1 }}
               >
-                <p className="stat-label mb-2">
-                  <span className="const">const</span> {item.varName}
-                </p>
-                <p className="stat-number mb-2" style={{ fontSize: '3.5rem', lineHeight: 1 }}>
-                  = {item.val}{item.suffix};
-                </p>
-                <p className="stat-desc mt-auto">
-                  <span className="comment">// {item.desc}</span>
-                </p>
+                <div className="impact-stat-gutter">
+                  <span>0{i + 1}</span>
+                  <span className="opacity-20 mt-1">.</span>
+                </div>
+                <div className="impact-stat-content">
+                  <div className="code-line">
+                    <span className="const">const</span>
+                    <span className="var">{item.varName}</span>
+                    <span className="op">=</span>
+                    <span className="val">{item.val}{item.suffix};</span>
+                  </div>
+                  <div className="code-comment">
+                    // {item.desc}
+                  </div>
+                </div>
+                <div className="stat-glow" />
               </motion.div>
             ))}
           </div>
 
-          <SpotlightCard index={2} className="h-full">
-            <h4 className="text-base font-bold mb-5 grad-text" style={{ letterSpacing: '-0.02em' }}>Top Active Colleges</h4>
-            <div className="space-y-3">
-              {loading ? (
-                <p className="text-sm font-mono animate-pulse" style={{ color: 'var(--text-muted)' }}>// loading leaderboard...</p>
-              ) : stats.topColleges.filter(c => c.name && c.name !== 'Not specified').slice(0, 5).map((c, i) => (
-                <div key={i} className="flex flex-col gap-1.5 pt-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <span className="w-4 text-right text-xs font-mono shrink-0" style={{ color: i === 0 ? '#f59e0b' : 'var(--text-muted)' }}>
-                        {i + 1}.
-                      </span>
-                      <span className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
-                        {c.name}
-                      </span>
-                    </div>
-                    <span className="text-xs font-mono shrink-0 ml-4" style={{ color: 'var(--text-code)' }}>
-                      {c.count} members
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 rounded-full overflow-hidden ml-7" style={{ background: 'var(--bg-elevated)', width: 'calc(100% - 1.75rem)' }}>
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: i === 0 ? 'linear-gradient(90deg,#6366f1,#22d3ee)' : 'var(--primary-glow)' }}
-                      initial={{ width: 0 }}
-                      animate={inView ? { width: `${Math.max(5, (c.count / (stats.topColleges[0]?.count || 1)) * 100)}%` } : { width: 0 }}
-                      transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
-                    />
-                  </div>
+          <SpotlightCard index={2} className="h-full" style={{ borderLeft: '4px solid var(--accent)' }}>
+            <div className="flex justify-between items-center mb-8">
+               <div className="flex items-center gap-2">
+                 <span className="text-accent h-2 w-2 rounded-full animate-pulse" style={{ backgroundColor: '#a855f7' }} />
+                 <h4 className="text-base font-bold grad-text m-0" style={{ letterSpacing: '-0.02em' }}>Top Active Colleges</h4>
+               </div>
+               <div className="text-[10px] font-mono text-muted opacity-50 px-2 py-1 border border-border rounded">LEADERBOARD_V1.0.4</div>
+            </div>
+            <div className="relative">
+              {loading && stats.topColleges.length === 0 ? (
+                <div className="flex items-center justify-center min-h-[200px]">
+                  <p className="text-sm font-mono animate-pulse" style={{ color: 'var(--text-muted)' }}>// loading leaderboard...</p>
                 </div>
-              ))}
+              ) : (
+                <div className="podium-container">
+                  {/* Reorder: 2nd, 1st, 3rd for visual steps */}
+                  {[
+                    { ...(stats.topColleges[1] || {}), rank: 2 },
+                    { ...(stats.topColleges[0] || {}), rank: 1 },
+                    { ...(stats.topColleges[2] || {}), rank: 3 }
+                  ].filter(c => c.name).map((c, i) => (
+                    <motion.div
+                      key={c.rank}
+                      className={`podium-item rank-${c.rank}`}
+                      initial={{ opacity: 0, y: 32 }}
+                      animate={inView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ delay: 0.4 + (c.rank === 1 ? 0 : 0.2), duration: 0.6 }}
+                    >
+                      <div className="podium-name mb-2">{c.name}</div>
+                      <div className="podium-step">
+                        <div className="podium-rank-badge">{c.rank}</div>
+                        <div className="flex flex-col items-center">
+                          <div className="flex items-center gap-1.5 podium-count">
+                            <Users size={12} className="opacity-70" />
+                            <span>{c.count}</span>
+                          </div>
+                          <div className="text-[10px] opacity-40 font-mono">students</div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
           </SpotlightCard>
         </div>
@@ -1464,7 +1592,19 @@ const CodeSapiensHero = () => {
       const { data: hof } = await supabase.from('hall_of_fame').select('*').eq('is_active',true).order('created_at',{ascending:false});
       if (hof) setHallOfFame(hof);
       const { data: ph } = await supabase.from('community_photos').select('*').eq('is_active',true).order('order_number',{ascending:true});
-      if (ph) setCommunity(ph);
+      if (ph && ph.length > 0) {
+        setCommunity(ph);
+      } else {
+        // Fallback with real images from the live site
+        setCommunity([
+          { id: 1, image_url: 'https://res.cloudinary.com/dhtyd2r5f/image/upload/v1767537704/community-photos/halloffame-1767537703902-874266878.jpg', title: 'CodeSapiens Hall of Fame' },
+          { id: 2, image_url: 'https://res.cloudinary.com/dhtyd2r5f/image/upload/v1767537734/community-photos/halloffame-1767537734721-286693940.jpg', title: 'Community Awards 2025' },
+          { id: 3, image_url: 'https://res.cloudinary.com/dhtyd2r5f/image/upload/v1767537671/community-photos/halloffame-1767537671015-511535149.jpg', title: 'Core Member Spotlight' },
+          { id: 4, image_url: 'https://res.cloudinary.com/dhtyd2r5f/image/upload/v1767537766/community-photos/halloffame-1767537766115-282602891.jpg', title: 'August Tech Meetup' },
+          { id: 5, image_url: 'https://res.cloudinary.com/dhtyd2r5f/image/upload/v1767538223/community-photos/halloffame-1767538223035-53933069.jpg', title: 'UI/UX Design Session' },
+          { id: 6, image_url: 'https://res.cloudinary.com/dhtyd2r5f/image/upload/v1767538197/community-photos/halloffame-1767538197379-764134620.jpg', title: 'Full Stack Workshop' },
+        ]);
+      }
       setCommunityLoading(false);
     };
     load().catch(() => setCommunityLoading(false));
@@ -1726,23 +1866,22 @@ const CodeSapiensHero = () => {
               </p>
             </div>
           ) : (
-            <div className="tilted-grid">
-              {communityPhotos.slice(0,6).map((photo, i) => (
-                <div key={photo.id} className="tilted-card">
-                  <div className="tilted-card-inner">
-                    <img
-                      src={photo.image_url}
-                      alt={photo.title}
-                      className={`tilted-card-img ${i % 2 === 0 ? 'img-odd' : 'img-even'}`}
-                      style={i % 2 === 0
-                        ? { transform: 'translateX(-70%) translateY(-105%) rotateZ(-45deg)' }
-                        : { transform: 'translateX(-30%) translateY(5%) rotateZ(135deg)' }
-                      }
-                    />
-                    <h2 className="tilted-card-label">{photo.title}</h2>
-                  </div>
-                </div>
-              ))}
+            <div className="community-3d-scene">
+              <div className="community-3d-carousel">
+                {communityPhotos.map((photo, i) => {
+                  const angle = (i * 360) / communityPhotos.length;
+                  return (
+                    <div 
+                      key={photo.id} 
+                      className="carousel-photo-wrap"
+                      style={{ transform: `rotateY(${angle}deg) translateZ(450px)` }}
+                    >
+                      <img src={photo.image_url} alt={photo.title} />
+                      <div className="carousel-photo-label">{photo.title}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
