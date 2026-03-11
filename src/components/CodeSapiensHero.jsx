@@ -718,6 +718,11 @@ const LANDING_STYLES = `
     margin: 4rem 0;
     overflow: visible;
   }
+  @media (max-width: 640px) {
+    .community-3d-scene { height: 280px; margin: 2rem 0; }
+    .community-3d-carousel { width: 180px; height: 120px; }
+    .carousel-photo-wrap { width: 160px; height: 110px; }
+  }
   .community-3d-carousel {
     position: relative;
     width: 300px;
@@ -986,7 +991,7 @@ const LANDING_STYLES = `
     font-size: 0.7rem;
     font-weight: 700;
     text-align: center;
-    color: var(--primary);
+    color: var(--text-primary);
     margin-bottom: 0.25rem;
     padding: 0 0.5rem;
     max-width: 100%;
@@ -1920,7 +1925,7 @@ const CodeSapiensHero = () => {
                     <div 
                       key={photo.id} 
                       className="carousel-photo-wrap"
-                      style={{ transform: `rotateY(${angle}deg) translateZ(450px)` }}
+                      style={{ transform: `rotateY(${angle}deg) translateZ(${isMobile ? 220 : 450}px)` }}
                     >
                       <img src={photo.image_url} alt={photo.title} />
                       <div className="carousel-photo-label">{photo.title}</div>
