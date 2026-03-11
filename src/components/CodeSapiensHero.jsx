@@ -785,19 +785,102 @@ const LANDING_STYLES = `
     from { opacity:0; transform: translateY(6px); }
     to   { opacity:1; transform: translateY(0); }
   }
-  .term-card {
-    background: #0f1729;
-    border: 1px solid #1e293b;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 0 0 1px #6366f110, 0 4px 24px rgba(0,0,0,0.4);
-    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+  /* ── Hall of Fame Carousel ── */
+  .hof-carousel-container {
     position: relative;
+    padding: 2rem 0;
+    overflow: visible;
   }
-  .term-card::before {
-    content: '';
+  .hof-viewport {
+    overflow: hidden;
+    cursor: grab;
+    padding: 2rem 0;
+  }
+  .hof-viewport:active { cursor: grabbing; }
+  .hof-track {
+    display: flex;
+    gap: 2rem;
+  }
+  .tilted-card.hof {
+    width: 280px;
+    height: 380px;
+    background: #0f1729;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 20px;
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .tilted-card.hof:hover {
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(99, 102, 241, 0.2);
+    transform: translateY(-10px) rotate(2deg);
+  }
+  .tilted-card-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .tilted-card-img-wrap {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    padding: 6px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+  .tilted-card-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #0f1729;
+  }
+  .tilted-card-label {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .hof-nav-btn {
     position: absolute;
-    inset: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(15, 23, 41, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    transition: all 0.3s ease;
+    cursor: none;
+  }
+  .hof-nav-btn:hover {
+    background: var(--primary);
+    border-color: white;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  }
+  .hof-nav-btn.prev { left: -24px; }
+  .hof-nav-btn.next { right: -24px; }
+  
+  @media (max-width: 768px) {
+    .hof-nav-btn { display: none; }
+    .tilted-card.hof { width: 240px; height: 320px; }
+  }
     background: repeating-linear-gradient(
       0deg,
       transparent,
@@ -990,6 +1073,25 @@ const LANDING_STYLES = `
   .rank-1 .podium-step { height: 160px; border-top: 2px solid #f59e0b; padding-bottom: 1rem; }
   .rank-2 .podium-step { height: 130px; border-top: 2px solid #94a3b8; padding-bottom: 0.75rem; }
   .rank-3 .podium-step { height: 110px; border-top: 2px solid #b45309; padding-bottom: 0.5rem; }
+
+  .hof-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+  .hof-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.2);
+    transition: all 0.3s ease;
+  }
+  .hof-dot.active {
+    width: 20px;
+    background: var(--primary);
+    border-radius: 3px;
+  }
 
   @media (max-width: 640px) {
     .podium-container { gap: 0.5rem; }
@@ -1509,6 +1611,7 @@ const CodeSapiensHero = () => {
   const monkeyColorRef = useRef(null);
   const monkeyTintRef = useRef(null);
   const monkeyRingRef = useRef(null);
+  const hofScrollRef = useRef(null);
 
   const scrollProgress = useScrollProgress();
   useAurora(canvasRef);
@@ -1878,36 +1981,73 @@ const CodeSapiensHero = () => {
       <NoticeSection/>
 
       {/* ── Hall of Fame ── */}
-      <motion.section className="py-24 relative"
+      <motion.section className="py-24 relative overflow-hidden"
         style={{ background: 'var(--bg-base)', borderTop: '1px solid var(--border)' }}
         initial={{ opacity:0, y:32 }} whileInView={{ opacity:1, y:0 }}
         transition={{ type:'spring', stiffness:60, damping:20 }} viewport={{ once:true, amount:0.1 }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="ide-label mb-10"><span className="ide-prompt">$</span><span>ls --hall-of-fame</span></div>
-          <div className="overflow-hidden w-full relative group">
-            <motion.div 
-              className="flex gap-8 w-max py-4"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
-              style={{ paddingLeft: '1rem' }}
-            >
-              {[...hallOfFame, ...hallOfFame].map((entry, i) => (
-                <div key={`${entry.id || 'hof'}-${i}`} className="tilted-card hof shrink-0" style={{ width: '260px' }}>
-                  <div className="tilted-card-inner">
-                    <img
-                      src={entry.image_url}
-                      alt={entry.student_name}
-                      className={`tilted-card-img ${i % 2 === 0 ? 'img-odd' : 'img-even'}`}
-                      style={i % 2 === 0
-                        ? { transform: 'translateX(-70%) translateY(-105%) rotateZ(-45deg)' }
-                        : { transform: 'translateX(-30%) translateY(5%) rotateZ(135deg)' }
-                      }
-                    />
-                    <h2 className="tilted-card-label whitespace-normal">{entry.student_name}</h2>
-                  </div>
-                </div>
+          
+          <div className="hof-carousel-container">
+            <div className="hof-viewport" ref={hofScrollRef} style={{ scrollBehavior: 'smooth' }}>
+              <motion.div 
+                className="hof-track"
+                drag="x"
+                dragConstraints={hofScrollRef}
+                style={{ width: 'max-content' }}
+              >
+                {hallOfFame.map((entry, i) => (
+                  <motion.div 
+                    key={entry.id || i} 
+                    className="tilted-card hof shrink-0"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <div className="tilted-card-inner">
+                      <div className="tilted-card-img-wrap">
+                        <img
+                          src={entry.image_url}
+                          alt={entry.student_name}
+                          className="tilted-card-img"
+                        />
+                      </div>
+                      <h2 className="tilted-card-label">{entry.student_name}</h2>
+                      <div className="text-[10px] uppercase tracking-widest text-secondary font-bold opacity-60">Success Story</div>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+            
+            <div className="hof-dots">
+              {hallOfFame.slice(0, Math.ceil(hallOfFame.length / 3)).map((_, i) => (
+                <div key={i} className={`hof-dot ${i === 0 ? 'active' : ''}`} />
               ))}
-            </motion.div>
+            </div>
+
+            {hallOfFame.length > 3 && (
+              <>
+                <button 
+                  className="hof-nav-btn prev" 
+                  onClick={() => {
+                    const track = hofScrollRef.current;
+                    if (track) track.scrollBy({ left: -312, behavior: 'smooth' });
+                  }}
+                  aria-label="Previous"
+                >
+                  <ArrowRight size={20} style={{ transform: 'rotate(180deg)' }} />
+                </button>
+                <button 
+                  className="hof-nav-btn next" 
+                  onClick={() => {
+                    const track = hofScrollRef.current;
+                    if (track) track.scrollBy({ left: 312, behavior: 'smooth' });
+                  }}
+                  aria-label="Next"
+                >
+                  <ArrowRight size={20} />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </motion.section>
