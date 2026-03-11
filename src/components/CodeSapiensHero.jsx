@@ -785,102 +785,6 @@ const LANDING_STYLES = `
     from { opacity:0; transform: translateY(6px); }
     to   { opacity:1; transform: translateY(0); }
   }
-  /* ── Hall of Fame Carousel ── */
-  .hof-carousel-container {
-    position: relative;
-    padding: 2rem 0;
-    overflow: visible;
-  }
-  .hof-viewport {
-    overflow: hidden;
-    cursor: grab;
-    padding: 2rem 0;
-  }
-  .hof-viewport:active { cursor: grabbing; }
-  .hof-track {
-    display: flex;
-    gap: 2rem;
-  }
-  .tilted-card.hof {
-    width: 280px;
-    height: 380px;
-    background: #0f1729;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 20px;
-    padding: 1.5rem;
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  .tilted-card.hof:hover {
-    border-color: var(--primary);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(99, 102, 241, 0.2);
-    transform: translateY(-10px) rotate(2deg);
-  }
-  .tilted-card-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .tilted-card-img-wrap {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    padding: 6px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-  }
-  .tilted-card-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid #0f1729;
-  }
-  .tilted-card-label {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
-  .hof-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(15, 23, 41, 0.8);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-    transition: all 0.3s ease;
-    cursor: none;
-  }
-  .hof-nav-btn:hover {
-    background: var(--primary);
-    border-color: white;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-  }
-  .hof-nav-btn.prev { left: -24px; }
-  .hof-nav-btn.next { right: -24px; }
-  
-  @media (max-width: 768px) {
-    .hof-nav-btn { display: none; }
-    .tilted-card.hof { width: 240px; height: 320px; }
-  }
     background: repeating-linear-gradient(
       0deg,
       transparent,
@@ -1074,24 +978,6 @@ const LANDING_STYLES = `
   .rank-2 .podium-step { height: 130px; border-top: 2px solid #94a3b8; padding-bottom: 0.75rem; }
   .rank-3 .podium-step { height: 110px; border-top: 2px solid #b45309; padding-bottom: 0.5rem; }
 
-  .hof-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-  }
-  .hof-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgba(99, 102, 241, 0.2);
-    transition: all 0.3s ease;
-  }
-  .hof-dot.active {
-    width: 20px;
-    background: var(--primary);
-    border-radius: 3px;
-  }
 
   @media (max-width: 640px) {
     .podium-container { gap: 0.5rem; }
@@ -1601,8 +1487,6 @@ const NoticeSection = () => (
 const CodeSapiensHero = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen]     = useState(false);
-  const [hallOfFame, setHallOfFame]         = useState([]);
-  const [communityPhotos, setCommunity]     = useState([]);
   const [communityLoading, setCommunityLoading] = useState(true);
   const wrapRef   = useRef(null);
   const canvasRef = useRef(null);
@@ -1611,7 +1495,6 @@ const CodeSapiensHero = () => {
   const monkeyColorRef = useRef(null);
   const monkeyTintRef = useRef(null);
   const monkeyRingRef = useRef(null);
-  const hofScrollRef = useRef(null);
 
   const scrollProgress = useScrollProgress();
   useAurora(canvasRef);
@@ -1676,8 +1559,6 @@ const CodeSapiensHero = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: hof } = await supabase.from('hall_of_fame').select('*').eq('is_active',true).order('created_at',{ascending:false});
-      if (hof) setHallOfFame(hof);
       const { data: ph } = await supabase.from('community_photos').select('*').eq('is_active',true).order('order_number',{ascending:true});
       if (ph && ph.length > 0) {
         setCommunity(ph);
@@ -1980,77 +1861,6 @@ const CodeSapiensHero = () => {
       <SocialMediaSection/>
       <NoticeSection/>
 
-      {/* ── Hall of Fame ── */}
-      <motion.section className="py-24 relative overflow-hidden"
-        style={{ background: 'var(--bg-base)', borderTop: '1px solid var(--border)' }}
-        initial={{ opacity:0, y:32 }} whileInView={{ opacity:1, y:0 }}
-        transition={{ type:'spring', stiffness:60, damping:20 }} viewport={{ once:true, amount:0.1 }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="ide-label mb-10"><span className="ide-prompt">$</span><span>ls --hall-of-fame</span></div>
-          
-          <div className="hof-carousel-container">
-            <div className="hof-viewport" ref={hofScrollRef} style={{ scrollBehavior: 'smooth' }}>
-              <motion.div 
-                className="hof-track"
-                drag="x"
-                dragConstraints={hofScrollRef}
-                style={{ width: 'max-content' }}
-              >
-                {hallOfFame.map((entry, i) => (
-                  <motion.div 
-                    key={entry.id || i} 
-                    className="tilted-card hof shrink-0"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="tilted-card-inner">
-                      <div className="tilted-card-img-wrap">
-                        <img
-                          src={entry.image_url}
-                          alt={entry.student_name}
-                          className="tilted-card-img"
-                        />
-                      </div>
-                      <h2 className="tilted-card-label">{entry.student_name}</h2>
-                      <div className="text-[10px] uppercase tracking-widest text-secondary font-bold opacity-60">Success Story</div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-            
-            <div className="hof-dots">
-              {hallOfFame.slice(0, Math.ceil(hallOfFame.length / 3)).map((_, i) => (
-                <div key={i} className={`hof-dot ${i === 0 ? 'active' : ''}`} />
-              ))}
-            </div>
-
-            {hallOfFame.length > 3 && (
-              <>
-                <button 
-                  className="hof-nav-btn prev" 
-                  onClick={() => {
-                    const track = hofScrollRef.current;
-                    if (track) track.scrollBy({ left: -312, behavior: 'smooth' });
-                  }}
-                  aria-label="Previous"
-                >
-                  <ArrowRight size={20} style={{ transform: 'rotate(180deg)' }} />
-                </button>
-                <button 
-                  className="hof-nav-btn next" 
-                  onClick={() => {
-                    const track = hofScrollRef.current;
-                    if (track) track.scrollBy({ left: 312, behavior: 'smooth' });
-                  }}
-                  aria-label="Next"
-                >
-                  <ArrowRight size={20} />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </motion.section>
       {/* ── Team (Founder cards) ── */}
       <FoundersSection founders={[
         { photo:'https://res.cloudinary.com/druvxcll9/image/upload/v1761122517/1679197646322_n1svjq_s5w42a.jpg', name:'Thiyaga B', role:'Founder', linkedin:'https://www.linkedin.com/company/codesapiens-community/', github:'https://github.com/Codesapiens-in', instagram:'https://www.instagram.com/codesapiens/' },
